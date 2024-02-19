@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log In
+{% endblock %}
+
+{% block body %}
+
+<div>
+    <h1> LOGIN </h1>
+    <!--DEVELOPER SWITCH-->
+    <!--REMOTE-->
+    <!--<form action="/webapp/login" method="post">-->
+
+    <!--LOCAL-->
+    <form action="/login" method="post">
+
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Usuario" type="text">
+        </div>
+        <div class="mb-3">
+            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Contraseña" type="password">
+        </div>
+        <button class="btn btn-primary" type="submit">Ingresar</button>
+    </form>
+</div>
+{% endblock %}

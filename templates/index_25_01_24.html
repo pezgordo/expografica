@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+    <section class="main">       
+            <h2>Registro de Visitantes</h2>
+    <!--PARA TRABAJO LOCAL-->        
+            <form method="post" action="/registro">
+    <!--CAMBIAR PARA SUBIR AL SERVIDOR-->        
+    <!--    <form method="post" action="/webapp/registro">  -->   
+                <div class="form-group">
+                <label for="nombre">Nombre:</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                <div class="form-group">
+                <label for="direccion">Direcci&oacute;n:</label>
+                <input type="text" class="form-control" id="direccion" name="direccion" required>
+                </div>
+                
+                <div class="form-group">
+                <label for="empresa">Empresa:</label>
+                <input type="text" class="form-control" id="empresa" name="empresa" required>
+                </div>
+                
+                <div class="form-group">
+                <label for="cargo">Cargo:</label>
+                <input type="text" class="form-control" id="cargo" name="cargo" required>
+                </div>
+                
+                <div class="form-group">
+                <label for="rubro">Rubro:</label>
+                <input type="text" class="form-control" id="rubro" name="rubro" required>
+                </div>
+        
+                <div class="form-group">
+                <label for="telefono">Tel&eacute;fono:</label>
+                <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                </div>
+        
+                <div class="form-group">
+                <label for="correo">Correo:</label>
+                <input type="email" class="form-control" id="correo" name="correo" required>
+                </div>
+
+                <div class="form-group">
+                <label for="feria">Feria:</label>
+                {% for feria in ferias %}
+                    <input name="feria" type="radio" value="{{ feria }}"> {{ feria }}
+                {% endfor %}
+                </div>
+
+
+                
+                <button type="submit" class="botoncito">Registrar</button>
+            </form>
+    </section> 
+        <aside>
+       <div class="logo">
+            <img class="area" src="https://expograficabolivia.com.bo/wp-content/uploads/2023/03/LOGO-WEB-8032023.png" alt="">
+        </div> 
+        <div class="datos">
+            <div class="fecha">
+               <p>19|20|21 ABRIL 2024</p>
+            </div>
+            <div class="lugar">
+                <p>Fexpocruz, Pabell&oacute;n Guarayo</br>Santa Cruz, Bolivia</p>
+            </div>
+        </div>  
+        </aside>
+    </div>
+
+
+    </form>
+{% endblock %}

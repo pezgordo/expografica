@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+
+{% block head %}
+
+<link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid" style="font-size: 12px; text-align: center; padding: 0px; margin: 0px;">
+        <div class="row">
+            <div class="col d-print-table">
+                <h3 class="text-light"> Lista de Visitantes Registrados</h3>
+                <button class="btn btn-secondary hidden-print d-print-none" onclick="window.print();"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Imprimir </button>
+                <section>
+                    <div>
+                        <div id="table"></div>
+                      </div>
+
+
+                </section>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <script>
+      const tableDiv = document.getElementById('table');
+
+      const updateUrl = (prev, query) => {
+        return prev + (prev.indexOf('?') >= 0 ? '&' : '?') + new URLSearchParams(query).toString();
+      };
+
+      const editableCellAttributes = (data, row, col) => {
+          if (row) {
+            return {contentEditable: 'true', 'data-element-id': row.cells[0].data};
+          }
+          else {
+            return {};
+          }
+      };
+
+      new gridjs.Grid({
+        columns: [
+          { id: 'id', name: 'ID' },
+          { id: 'empresa', name: 'Empresa', sort: false },
+          { id: 'nombre', name: 'Nombre', 'attributes': editableCellAttributes },
+          { id: 'cargo', name: 'Cargo', sort: false },
+          { id: 'documento', name: 'Documento', sort: true },
+          { id: 'telefono', name: 'Telefono', sort: false },
+          { id: 'correo', name: 'Correo', sort: false },
+          { id: 'ciudad', name: 'Ciudad', sort: false },
+          { id: 'pais', name: 'Pais' },
+          { id: 'feria', name: 'Feria' },
+          { id: 'identificador', name: 'Identificador' },
+          {
+            name: 'Desregistrar', sort: false,
+            formatter: (_, row) =>
+                    gridjs.html(`<form action="/desregistrarse" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Desregistrar</button></form>`)       
+          },
+          {
+            name: 'Imprimir Etiqueta', sort: false,
+            formatter: (_, row) =>
+                    gridjs.html(`<form action="/generate_qr" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Imprimir Etiqueta</button></form>`)       
+          },
+          
+          
+        ],
+        server: {
+          url: '/api/data',
+          then: results => results.data,
+          total: results => results.total,
+        },
+        search: {
+          enabled: true,
+          server: {
+            url: (prev, search) => {
+              return updateUrl(prev, {search});
+            },
+          },
+        },
+        resizable: true,
+        sort: {
+          enabled: true,
+          multiColumn: true,
+          server: {
+            url: (prev, columns) => {
+              const columnIds = ['id', 'empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador'];
+              const sort = columns.map(col => (col.direction === 1 ? '+' : '-') + columnIds[col.index]);
+              return updateUrl(prev, {sort});
+            },
+          },
+        },
+        pagination: {
+          enabled: true,
+          server: {
+            url: (prev, page, limit) => {
+              return updateUrl(prev, {start: page * limit, length: limit});
+            },
+          },
+        },
+        language: {
+          'search': {
+            'placeholder': 'Buscar...'
+          },
+          'pagination': {
+            'previous': 'Anterior',
+            'next': 'Siguiente',
+            'showing': 'Mostrando del',
+            'of': 'de',
+            'to': 'al',
+            'results': () => 'Resultados'
+          },
+          'loading': 'Cargando...',
+          'noRecordsFound': 'No se encontraron resultados.',
+          'error': 'Ocurrio un error al obtener los datos',
+        }
+      }).render(tableDiv);
+
+      let savedValue;
+
+      tableDiv.addEventListener('focusin', ev => {
+        if (ev.target.tagName === 'TD') {
+          savedValue = ev.target.textContent;
+        }
+      });
+
+      tableDiv.addEventListener('focusout', ev => {
+        if (ev.target.tagName === 'TD') {
+          if (savedValue !== ev.target.textContent) {
+            fetch('/api/data', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                id: ev.target.dataset.elementId,
+                [ev.target.dataset.columnId]: ev.target.textContent
+              }),
+            });
+          }
+          savedValue = undefined;
+        }
+      });
+
+      tableDiv.addEventListener('keydown', ev => {
+        if (ev.target.tagName === 'TD') {
+          if (ev.key === 'Escape') {
+            ev.target.textContent = savedValue;
+            ev.target.blur();
+          }
+          else if (ev.key === 'Enter') {
+            ev.preventDefault();
+            ev.target.blur();
+          }
+        }
+      });
+      </script>
+
+{% endblock %}

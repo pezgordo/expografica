@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Codigo QR del Registrado </title>
+
+</head>
+<body>
+    <h1>Codigo QR</h1>
+    <div>
+        <p  style="text-align: left; font-size: 20px; font-weight: bold; font-family: Arial, Helvetica, sans-serif;">{{ data|safe }}</p>
+    </div>
+
+    <img src="{{ qr_path }}"><br>
+
+
+</body>
+</html>

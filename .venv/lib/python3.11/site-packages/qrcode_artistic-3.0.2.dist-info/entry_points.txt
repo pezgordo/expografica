@@ -1,0 +1,3 @@
+[segno.plugin.converter]
+artistic = qrcode_artistic:write_artistic
+pil = qrcode_artistic:write_pil

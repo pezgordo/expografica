@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Change Example</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <style>
+        .flag-button {
+            width: 50px; /* Adjust the width as needed */
+            height: 30px; /* Adjust the height as needed */
+            margin: 5px; /* Adjust the margin as needed */
+            border: none;
+            
+        }
+    </style>
+</head>
+<body>
+
+    <div>
+        <button onclick="changeLanguage('en')" class="flag-icon flag-icon-us flag-button" title="English"></button>
+        <button onclick="changeLanguage('es')" class="flag-icon flag-icon-es" title="Español"></button>
+        <button onclick="changeLanguage('fr')" class="flag-icon flag-icon-fr" title="Français"></button>
+        <!-- Add more flag buttons for other languages -->
+    </div>
+
+    <h1 id="greeting">Hello, World!</h1>
+
+    <script>
+        function changeLanguage(selectedLanguage) {
+            document.documentElement.lang = selectedLanguage; // Change the language of the entire document
+            updateGreetings(selectedLanguage);
+        }
+
+        function updateGreetings(language) {
+            const greetings = {
+                'en': 'Hello, World!',
+                'es': '¡Hola, Mundo!',
+                'fr': 'Bonjour le monde!'
+                // Add more language-specific greetings as needed
+            };
+
+            document.getElementById('greeting').textContent = greetings[language];
+        }
+    </script>
+
+</body>
+</html>
+

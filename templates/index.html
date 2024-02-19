@@ -1,0 +1,259 @@
+{% if var_feria == 'TEXTIL' %}
+    {% extends "layout_textil.html" %}
+
+{% else %}
+    {% extends "layout.html" %}
+{% endif %}
+
+{% block head %}
+    <!-- Additional head content for this specific page -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_form.css') }}">
+    <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <style>
+        .flag-button {
+            width: 50px; /* Adjust the width as needed */
+            height: 30px; /* Adjust the height as needed */
+            margin: 5px; /* Adjust the margin as needed */
+            border: none; 
+        }
+        .flag-icon {
+            background-color: transparent;
+        }
+
+        .hide {
+        display: none;
+        }
+            
+        .myDIV:hover + .hide {
+        display: block;
+        color: rgb(255, 255, 255);
+        }
+
+        
+    </style>
+
+    
+{% endblock %}
+
+
+{% block body %}
+
+<div class="container-fluid">
+        <section class="contenedor-main row">
+            <main class="col-sm-12 col-md-12 col-lg-6 ms-sm-0 px-md-5">
+                <div>
+                    <button onclick="changeLanguage('en')" class="flag-icon flag-icon-us flag-button" title="English"></button>
+                    <button onclick="changeLanguage('es')" class="flag-icon flag-icon-es flag-button" title="Español"></button>
+                </div>
+                <h2 id="title_lang">Registro de Visitantes</h2>
+                <form method="post" action="/registro">
+                    
+                    <div class="form-group mb-2">
+                        <label for="empresa"  class="form-label text-white" id="empresa_lang">Empresa:</label>
+                        <input type="text" class="form-control" id="empresa" name="empresa" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="nombre" class="form-label text-white" id="nombre_lang">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="cargo" class="form-label text-white" id="cargo_lang">Cargo:</label>
+                        <input type="text" class="form-control" id="cargo" name="cargo" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="documento" class="form-label text-white" id="documento_lang">Documento de Identidad:</label>
+                        <input type="text" class="form-control" id="documento" name="documento" required>
+                    </div>
+                    
+
+
+                    <div class="form-group mb-2">
+                        <label for="telefono" class="form-label text-white" id="telefono_lang">Celular:</label>
+                        
+                        <div class="select-box myDIV">
+                            <div class="selected-option" aria-label="Selected country: Bolivia">
+                                <div>
+                                    <span class="iconify" data-icon="flag:bo-4x3"></span>
+                                    <strong>+591</strong>
+                                </div>
+                                
+                                <input type="tel" placeholder="Whatsapp" class="form-control" id="telefono" name="telefono" required> 
+                            </div>
+                            <div class="options">
+                                <input type="text" class="search-box" id="searchInput" placeholder="Elige Tu Pais">
+                                <ol>
+                    
+                                </ol>
+                            </div>
+                        </div>
+                        <div class="hide" id="instrucciones_lang"> *Introduce tu numero sin espacios despues del codigo pais.  Debe tener WhatsApp para recibir el codigo de registro. </div>
+                    </div>
+                        
+
+
+ 
+                    <div class="form-group mb-2">
+                        <label for="correo" class="form-label text-white" id="correo_lang">Correo Electronico:</label>
+                        <input type="email" class="form-control" id="correo" name="correo" required>
+
+                    </div>
+
+                    
+                    <div class="form-group mb-2">
+                        <label for="ciudad" class="form-label text-white" id="ciudad_lang">Ciudad:</label>
+                        <input type="text" class="form-control" id="ciudad" name="ciudad" required>
+                    </div>
+                    
+                    <!--<div class="form-group mb-2">
+                        <label for="Pais" class="form-label text-white" id="pais_lang">Pais:</label>
+                        <input type="text" class="form-control" id="pais" name="pais" required>
+                    </div>-->
+
+                    <div class="form-group mb-2">
+                        <label for="Pais" class="form-label text-white" id="pais_lang">Pais:</label>
+                        <select class="form-control" id="pais" name="pais" required>
+                            <option selected disabled id="drop_lang">Elige tu Pais</option>
+                            <option value="Bolivia">Bolivia</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Brasil">Brasil</option>
+                            <option value="Chile">Chile</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Ecuador">Ecuador</option>
+                            <option value="Mexico">Mexico</option>
+                            <option value="Peru">Peru</option>
+                            <option value="United States">United States</option>
+                            
+                        </select>
+                    </div>
+            
+
+                    <!--<div class="form-group mb-2">
+                        <label for="feria" class="form-label text-white" id="feria_lang">Feria:</label>
+                        {% for feria in ferias %}
+                            <input name="feria" type="radio" class="form-check-input text-white" value="{{ feria }}"> {{ feria }}
+                        {% endfor %}
+                    </div>-->
+
+                    <div class="form-group mb-2">
+                        <input type="hidden" name="feria" value="{{ var_feria }}">
+                    </div>
+
+
+
+                <button type="submit" class="botoncito" id="boton_lang">Registrar</button>
+            </form>
+            </main> 
+            <aside class="col-sm-12 col-md-12 col-lg-6">
+                <div class="col-12">
+                    <img src="https://expograficabolivia.com.bo/wp-content/uploads/2023/03/LOGO-WEB-8032023.png" class="img-responsive" alt="">
+                </div>
+                <div class="datos col-sm-12 col-md-6">
+                    <div class="fecha">
+                       <p>19|20|21 ABRIL 2024</p>
+                    </div>
+                    <div class="lugar">
+                        <p>Fexpocruz, Pabellon Guarayo</br>Santa Cruz, Bolivia</p>
+                    </div>
+                </div> 
+            </aside>
+        </section>
+    </div>
+    <script>
+        function changeLanguage(selectedLanguage) {
+            document.documentElement.lang = selectedLanguage; // Change the language of the entire document
+            updateFields(selectedLanguage);
+        }
+
+        function updateFields(language) {
+            const title = {
+                'en': 'Visitor Registration',
+                'es': 'Registro de Visitantes',
+            };
+
+            const empresa = {
+                'en': 'Company',
+                'es': 'Empresa',
+            };
+
+            const nombre = {
+                'en': 'Name',
+                'es': 'Nombre',
+            };
+
+            const cargo = {
+                'en': 'Job Title',
+                'es': 'Cargo',
+            };
+
+            const documento = {
+                'en': 'ID Number',
+                'es': 'Documento de Identidad',
+            };
+
+            const telefono = {
+                'en': 'Cell Phone',
+                'es': 'Celular',
+            };
+
+            const correo = {
+                'en': 'Email',
+                'es': 'Correo Electronico',
+            };
+
+            const ciudad = {
+                'en': 'City',
+                'es': 'Ciudad',
+            };
+
+            const pais = {
+                'en': 'Country',
+                'es': 'Pais',
+            };
+
+            const boton = {
+                'en': 'Register',
+                'es': 'Registrar',
+            };
+
+            const dropdown = {
+                'en': 'Choose your Country',
+                'es': 'Elige tu Pais',
+            };
+
+            const placeholders = {
+                'en': 'Choose Your Country',
+                'es': 'Elige Tu Pais',
+            };
+
+
+
+            const instrucciones = {
+                'en': '*Enter your number without spaces after the country code. You must have WhatsApp to receive the registration code.',
+                'es': '*Introduce tu numero sin espacios despues del codigo pais.  Debe tener WhatsApp para recibir el codigo de registro.',
+            }
+
+
+            document.getElementById('title_lang').textContent = title[language];
+            document.getElementById('empresa_lang').textContent = empresa[language];
+            document.getElementById('nombre_lang').textContent = nombre[language];
+            document.getElementById('cargo_lang').textContent = cargo[language];
+            document.getElementById('documento_lang').textContent = documento[language];
+            document.getElementById('telefono_lang').textContent = telefono[language];
+            document.getElementById('correo_lang').textContent = correo[language];
+            document.getElementById('ciudad_lang').textContent = ciudad[language];
+            document.getElementById('pais_lang').textContent = pais[language];
+            document.getElementById('boton_lang').textContent = boton[language];
+            document.getElementById('drop_lang').textContent = dropdown[language];
+
+            document.getElementById('searchInput').placeholder = placeholders[language];
+            document.getElementById('instrucciones_lang').textContent = instrucciones[language];
+
+        }
+    </script>
+    <script src="{{ url_for('static', filename='form_script.js') }}"></script>
+
+{% endblock %}

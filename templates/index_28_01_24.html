@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<div class="container-fluid">
+        <section class="contenedor-main row">
+            <main class="col-sm-12 col-md-12 col-lg-6 ms-sm-0 px-md-5">
+                <h2>Registro de Visitantes</h2>
+                <form method="post" action="/registro">
+                    
+                    <div class="form-group mb-2">
+                        <label for="empresa"  class="form-label text-white">Empresa:</label>
+                        <input type="text" class="form-control" id="empresa" name="empresa" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="nombre" class="form-label text-white">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="cargo" class="form-label text-white">Cargo:</label>
+                        <input type="text" class="form-control" id="cargo" name="cargo" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="documento" class="form-label text-white">Documento:</label>
+                        <input type="text" class="form-control" id="documento" name="documento" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="telefono" class="form-label text-white">Tel&eacute;fono:</label>
+                        <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="correo" class="form-label text-white">Correo:</label>
+                        <input type="email" class="form-control" id="correo" name="correo" required>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <label for="rubro" class="form-label text-white">Rubro:</label>
+                        <input type="text" class="form-control" id="rubro" name="rubro" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="ciudad" class="form-label text-white">Ciudad:</label>
+                        <input type="text" class="form-control" id="ciudad" name="ciudad" required>
+                    </div>
+                    
+                    <div class="form-group mb-2">
+                        <label for="Pais" class="form-label text-white">Pais:</label>
+                        <input type="text" class="form-control" id="pais" name="pais" required>
+                    </div>
+            
+
+                    <div class="form-group mb-2">
+                        <label for="feria" class="form-label text-white">Feria:</label>
+                        {% for feria in ferias %}
+                            <input name="feria" type="radio" class="form-check-input text-white" value="{{ feria }}"> {{ feria }}
+                        {% endfor %}
+                    </div>
+
+                <button type="submit" class="botoncito">Registrar</button>
+            </form>
+            </main> 
+            <aside class="col-sm-12 col-md-12 col-lg-6">
+                <div class="col-12">
+                    <img src="https://expograficabolivia.com.bo/wp-content/uploads/2023/03/LOGO-WEB-8032023.png" class="img-responsive" alt="">
+                </div>
+                <div class="datos col-sm-12 col-md-6">
+                    <div class="fecha">
+                       <p>19|20|21 ABRIL 2024</p>
+                    </div>
+                    <div class="lugar">
+                        <p>Fexpocruz, Pabellon Guarayo</br>Santa Cruz, Bolivia</p>
+                    </div>
+                </div> 
+            </aside>
+        </section>
+    </div>
+{% endblock %}
