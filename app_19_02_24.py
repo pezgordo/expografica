@@ -83,6 +83,63 @@ class RegistroDeVisitantes(SQLA_db.Model):
 #    SQLA_db.create_all()
 
 
+
+"""
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'empresa': self.empresa,
+            'nombre': self.nombre,
+            'cargo': self.cargo,
+            'documento': self.documento,
+            'telefono': self.telefono,
+            'correo': self.correo,
+            'ciudad': self.ciudad,
+            'pais': self.pais,
+            'feria': self.feria,
+            'identificador': self.identificador
+        }
+    
+
+
+def get_users(search=None, start=None, length=None, sort=None):
+    query = "SELECT * FROM registro_de_visitantes"
+    if search:
+        query += f" WHERE nombre LIKE '%{search}%' OR documento LIKE '%{search}%' OR identificador LIKE '%{search}%'"
+    if sort:
+        query += f" ORDER BY {sort.replace('-', ' DESC,')}"
+
+    if start is not None and length is not None:
+        query += f" LIMIT {length} OFFSET {start}"
+
+    db.execute(query)
+    users = db.fetchall()
+    return [User(*user).to_dict() for user in users]
+
+def count_users(search=None):
+    query = "SELECT COUNT(*) FROM users"
+    if search:
+        query += f"WHERE name LIKE '%{search}%' OR email LIKE '%{search}%'"
+
+    db.execute(query)
+    return db.fetchone()[0]
+
+def update_user(user_id, data):
+    if 'id' not in data or int(data['id']) != user_id:
+        abort(400)
+
+    for field in ['name', 'age', 'address', 'phone', 'email']:
+        if field in data:
+            db.execute(f"UPDATE users SET {field} = ? WHERE id = ?",
+                            (data[field], user_id))
+    conn.commit()
+
+
+#### END FOR TABLE DB CONNECT #######
+"""
+
+
+
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -115,86 +172,63 @@ def index():
 
 
 #### for table route
-
-DB_FILE = 'datos_feria.db'
-
-def execute_query(query, args=None):
-    connection = sqlite3.connect(DB_FILE)
-    cursor = connection.cursor()
-    if args:
-        cursor.execute(query, args)
-    else:
-        cursor.execute(query)
-    result = cursor.fetchall()
-    connection.commit()
-    connection.close()
-    return result
-
 @app.route('/api/data')
 def data():
-    query = "SELECT * FROM registro_de_visitantes"
+    query = RegistroDeVisitantes.query
 
-    # Search filter
+    # search filter
     search = request.args.get('search')
     if search:
-        query += " WHERE nombre LIKE ? OR documento LIKE ? OR identificador LIKE ?"
-        search_term = f"%{search}%"
-        args = (search_term, search_term, search_term)
-        query_result = execute_query(query, args)
-    else:
-        query_result = execute_query(query)
+        query = query.filter(SQLA_db.or_(
+            RegistroDeVisitantes.nombre.like(f'%{search}%'),
+            RegistroDeVisitantes.documento.like(f'%{search}%'),
+            RegistroDeVisitantes.identificador.like(f'%{search}%'),
+        ))
+    total = query.count()
 
-    total = len(query_result)
-
-    # Sorting
+    # sorting
     sort = request.args.get('sort')
     if sort:
         order = []
         for s in sort.split(','):
             direction = s[0]
             column_name = s[1:]
+            #if column_name not in ['id', 'nombre', 'documento', 'pais', 'feria', 'identificador']:
             if column_name in ['id', 'nombre', 'documento', 'pais', 'feria', 'identificador']:
-                order.append((column_name, direction))
-        if order:
-            query_result.sort(key=lambda x: x[order[0][0]], reverse=(order[0][1] == '-'))
+                col = getattr(RegistroDeVisitantes, column_name)
+                #nombre = 'nombre'
+            #col = getattr(RegistroDeVisitantes, nombre)
+            else:
+                col = RegistroDeVisitantes.nombre
 
-    # Pagination
+            if direction == '-':
+                col = col.desc()
+            order.append(col)
+        if order:
+            query = query.order_by(*order)
+
+    # pagination
     start = request.args.get('start', type=int, default=-1)
     length = request.args.get('length', type=int, default=-1)
     if start != -1 and length != -1:
-        query_result = query_result[start:start+length]
+        query = query.offset(start).limit(length)
 
-    # Response
-    data = [{'id': row[0], 'nombre': row[1], 'documento': row[2], 'pais': row[3], 'feria': row[4], 'identificador': row[5]} for row in query_result]
-    return {'data': data, 'total': total}
+    # response
+    return {
+        'data': [user.to_dict() for user in query],
+        'total': total,
+    }
 
 @app.route('/api/data', methods=['POST'])
 def update():
     data = request.get_json()
     if 'id' not in data:
         abort(400)
-
-    query = "SELECT * FROM RegistroDeVisitantes WHERE id = ?"
-    user_id = data['id']
-    user_data = execute_query(query, (user_id,))
-    if not user_data:
-        abort(404)
-
-    # Update fields
-    update_query = "UPDATE RegistroDeVisitantes SET "
-    update_fields = []
-    update_values = []
-    for field in ['empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador']:
+    user = RegistroDeVisitantes.query.get(data['id'])
+    for field in ['id', 'empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador']:
         if field in data:
-            update_fields.append(f"{field} = ?")
-            update_values.append(data[field])
-
-    update_query += ", ".join(update_fields)
-    update_query += " WHERE id = ?"
-    update_values.append(user_id)
-
-    execute_query(update_query, tuple(update_values))
-
+            setattr(user, field, data[field])
+    SQLA_db.session.commit()
     return '', 204
 
 ####
@@ -462,6 +496,8 @@ def logout():
     #return redirect("/webapp/")
     ###--- LOCAL ---###
     return redirect("/")
+
+
 
 
 
