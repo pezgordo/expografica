@@ -119,8 +119,10 @@ def data():
             print("ORDER IS: ")
             print(order[0])
             # Sort query_result based on the sorting parameters
-            query_result.sort(key=lambda x: x[0][order[0][0]], reverse=(order[0][1] == '-'))
+            #query_result.sort(key=lambda x: x[0][order[0][0]], reverse=(order[0][1] == '-'))
+            column_indices = {'id': 0, 'nombre': 1, 'documento': 2, 'pais': 3, 'feria': 4, 'identificador': 5}
             #query_result.sort(key=lambda x: x[order[0][0]], reverse=(order[0][1] == '-'))
+            query_result.sort(key=lambda x: x[column_indices[order[0][0]]], reverse=(order[0][1] == '-'))
 
 
     # Pagination
@@ -176,7 +178,6 @@ def desregistrarse():
         print(f"DELETE FROM registro_de_visitantes WHERE id = {id}")
         db.execute("DELETE FROM registro_de_visitantes WHERE id = ?", (id,))
         conn.commit()
-
 
     return redirect("/registrantes")
 
@@ -431,7 +432,11 @@ def logout():
     ###--- LOCAL ---###
     return redirect("/")
 
+# ADMINISTRACION
 
+@app.route("/administracion")
+def administracion():
+    return render_template('administracion.html')
 
 # GENERATE ETIQUETA
 @app.route('/generate_qr', methods=["GET", "POST"])
