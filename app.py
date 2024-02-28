@@ -6,29 +6,30 @@ import os
 from PIL import Image
 from flask_session import Session
 from helpers import apology
-from flask_sqlalchemy import SQLAlchemy
 
 
-
-
-
-#---WHATSAPP BOT---#
+#---Imports WHATSAPP BOT---#
 
 import requests
 import json
 
-#---WHATSAPP BOT ---#
+#---Imports WHATSAPP BOT ---#
+
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 #app.secret_key = 'clave_secreta'
 
+
+
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SQLALCHEMY_ECHO'] = False
 Session(app)
+
+
 
 # SQLite3 Conectar a base de datos
 conn = sqlite3.connect('datos_feria.db', check_same_thread=False)
@@ -42,45 +43,6 @@ FERIAS = [
     "TEXTIL",
     "GRAFICA"
 ]
-
-###---FOR DATABASE TABLE
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-        'sqlite:///' + os.path.join(basedir, 'datos_feria.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-SQLA_db = SQLAlchemy(app)
-
-
-class RegistroDeVisitantes(SQLA_db.Model):
-    __tablename__ = 'registro_de_visitantes'
-    id = SQLA_db.Column(SQLA_db.Integer, primary_key=True)
-    empresa = SQLA_db.Column(SQLA_db.Text)
-    nombre = SQLA_db.Column(SQLA_db.Text)
-    cargo = SQLA_db.Column(SQLA_db.Text)
-    documento = SQLA_db.Column(SQLA_db.Text)
-    telefono = SQLA_db.Column(SQLA_db.Text)
-    correo = SQLA_db.Column(SQLA_db.Text)
-    ciudad = SQLA_db.Column(SQLA_db.Text)
-    pais = SQLA_db.Column(SQLA_db.Text)
-    feria = SQLA_db.Column(SQLA_db.Text)
-    identificador= SQLA_db.Column(SQLA_db.Text)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'empresa': self.empresa,
-            'nombre': self.nombre,
-            'cargo': self.cargo,
-            'documento': self.documento,
-            'telefono': self.telefono,
-            'correo': self.correo,
-            'ciudad': self.ciudad,
-            'pais': self.pais,
-            'feria': self.feria,
-            'identificador': self.identificador
-        }
-
-#with app.app_context():
-#    SQLA_db.create_all()
 
 
 @app.after_request
@@ -107,10 +69,8 @@ def index():
     else:
         var_feria = 'GRAFICA'
 
-
-    #return render_template("index.html", ferias=FERIAS)
     return render_template("index.html", var_feria=var_feria)
-    #return render_template("login.html")
+  
     
 
 
@@ -156,7 +116,12 @@ def data():
             if column_name in ['id', 'nombre', 'documento', 'pais', 'feria', 'identificador']:
                 order.append((column_name, direction))
         if order:
-            query_result.sort(key=lambda x: x[order[0][0]], reverse=(order[0][1] == '-'))
+            print("ORDER IS: ")
+            print(order[0])
+            # Sort query_result based on the sorting parameters
+            query_result.sort(key=lambda x: x[0][order[0][0]], reverse=(order[0][1] == '-'))
+            #query_result.sort(key=lambda x: x[order[0][0]], reverse=(order[0][1] == '-'))
+
 
     # Pagination
     start = request.args.get('start', type=int, default=-1)
@@ -165,7 +130,7 @@ def data():
         query_result = query_result[start:start+length]
 
     # Response
-    data = [{'id': row[0], 'nombre': row[1], 'documento': row[2], 'pais': row[3], 'feria': row[4], 'identificador': row[5]} for row in query_result]
+    data = [{'id': row[0], 'empresa': row[1], 'nombre': row[2], 'cargo': row[3], 'documento': row[4], 'telefono': row[5], 'correo': row[6], 'ciudad': row[7],  'pais': row[8], 'feria': row[9], 'identificador': row[10]} for row in query_result]
     return {'data': data, 'total': total}
 
 @app.route('/api/data', methods=['POST'])
@@ -174,14 +139,14 @@ def update():
     if 'id' not in data:
         abort(400)
 
-    query = "SELECT * FROM RegistroDeVisitantes WHERE id = ?"
+    query = "SELECT * FROM registro_de_visitantes WHERE id = ?"
     user_id = data['id']
     user_data = execute_query(query, (user_id,))
     if not user_data:
         abort(404)
 
     # Update fields
-    update_query = "UPDATE RegistroDeVisitantes SET "
+    update_query = "UPDATE registro_de_visitantes SET "
     update_fields = []
     update_values = []
     for field in ['empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador']:
@@ -386,10 +351,13 @@ def register():
 
 def registrantes():
 
-    visitantes = RegistroDeVisitantes.query
-    query_1 = RegistroDeVisitantes.query.get(1)
+    query = "SELECT * FROM registro_de_visitantes"
+    visitantes = execute_query(query)
+
+    #visitantes = RegistroDeVisitantes.query
+    #query_1 = RegistroDeVisitantes.query.get(1)
     print("QUEIRYYYYYY")
-    print(query_1)
+    print(query)
     return render_template('registrantes.html', visitantes=visitantes)
 
 
