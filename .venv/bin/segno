@@ -1,4 +1,4 @@
-#!/Users/mac_air/Documents/work/expografica/.venv/bin/python3
+#!/Users/imacdevi/Documents/Work/Expografica/expografica/.venv/bin/python3.11
 # -*- coding: utf-8 -*-
 import re
 import sys
