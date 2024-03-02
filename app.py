@@ -6,6 +6,7 @@ import os
 from PIL import Image
 from flask_session import Session
 from helpers import apology
+from functools import wraps
 
 
 #---Imports WHATSAPP BOT---#
@@ -26,7 +27,6 @@ app = Flask(__name__)
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
-app.config['SQLALCHEMY_ECHO'] = False
 Session(app)
 
 
@@ -44,7 +44,22 @@ FERIAS = [
     "GRAFICA"
 ]
 
+### login required func
+def login_required(f):
+    """
+    Decorate routes to require login.
 
+    http://flask.pocoo.org/docs/0.12/patterns/viewdecorators/
+    """
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+# AFTER REQUEST
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -52,7 +67,6 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
-
 
 
 # INDEX
@@ -71,10 +85,8 @@ def index():
 
     return render_template("index.html", var_feria=var_feria)
   
-    
-
-
-#### for table route
+# FLASK GRID
+#### for table route - flask-grid ###
 
 DB_FILE = 'datos_feria.db'
 
@@ -164,11 +176,10 @@ def update():
 
     return '', 204
 
-####
+#### End - for table route
 
 
-
-# DESREGISTRARSE
+# DESREGISTRAR VISITANTES
 @app.route("/desregistrarse", methods=["POST"])
 def desregistrarse():
     # Olvidar registrante
@@ -182,10 +193,7 @@ def desregistrarse():
     return redirect("/registrantes")
 
 
-
-
-
-# REGISTRO
+# REGISTRO DE VISITANTES
 @app.route("/registro", methods=["POST"])
 def register():
 
@@ -336,20 +344,9 @@ def register():
             return render_template("success.html")
 
 
-
-
-# REGISTRANTES
+# LISTA DE REGISTRANTES
 @app.route("/registrantes")
-
-
-
-#@login_required
-###def registrantes():
-###    db.execute("SELECT * FROM registro_de_visitantes")
-###    registrantes=db.fetchall()
-###    return render_template("registrantes.html", registrantes=registrantes)
-
-
+@login_required
 def registrantes():
 
     query = "SELECT * FROM registro_de_visitantes"
@@ -360,7 +357,6 @@ def registrantes():
     print("QUEIRYYYYYY")
     print(query)
     return render_template('registrantes.html', visitantes=visitantes)
-
 
 
 # LOGIN
@@ -395,24 +391,14 @@ def login():
             return apology("usuario y/o contraseña invalido", 403)
 
         # Remember which user has logged in
-        #session["user_id"] = user[0]
+        session["user_id"] = user[0]
 
-        # Redirect user to home page
-
-        ###---DEVELOPER SWITCH---###
+        # Redirect user to registrantes page
+        return redirect("/administracion")
         
-        ###---REMOTE---###
-        #return redirect("/webapp/registrantes")
-    
-        ###---LOCAL---###
-        return redirect("/registrantes")
-        
-        
-
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
-
 
 
 # LOGOUT
@@ -424,19 +410,100 @@ def logout():
     session.clear()
 
     # Redirect user to login form
-
-    ### DEVELOPER SWITCH ###
-
-    ###--- REMOTE ---###
-    #return redirect("/webapp/")
-    ###--- LOCAL ---###
     return redirect("/")
 
-# ADMINISTRACION
 
+# ADMINISTRACION
 @app.route("/administracion")
+@login_required
 def administracion():
     return render_template('administracion.html')
+
+# ADMINISTRACION DE EXPOSITORES
+@app.route("/administracion_expositores")
+@login_required
+def administracion_expositores():
+
+    query = "SELECT * FROM registro_de_empresas"
+    empresas_registradas = execute_query(query)
+
+    return render_template("administracion_expositores.html", empresas_registradas=empresas_registradas)
+
+# FORMULARIO DE REGISTRO EXPOSITORES
+@app.route("/formulario_registro_expositores")
+def formulario_registro_expositores():
+
+    return render_template("formulario_registro_expositores.html")
+
+
+# REGISTRO DE EXPOSITORES
+@app.route("/registro_expositores", methods=["POST"])
+#@login_required
+def registro_expositores():
+
+    #generate random number
+    def generate_random_number():
+        return random.randint(100000, 999999)
+    
+    # Validar submision
+    empresa = request.form.get("nombre_empresa")
+    feria = request.form.get("tipo_feria")
+    telefono = request.form.get("telefono_empresa")
+    correo = request.form.get("correo_empresa")
+    pais = request.form.get("pais_empresa")
+    password = request.form.get("password")
+
+    while True:
+        # Generate random 6 digit number
+        random_number = generate_random_number()
+        identificador = random_number
+
+        # Check if the number exists in the table
+        db.execute('SELECT * FROM registro_de_empresas WHERE identificador = ?', (random_number,))
+        existing_row = db.fetchone()
+        print(existing_row)
+
+        # Ensure POST Method
+        if request.method == "POST":
+
+            if existing_row is None:
+                if not empresa or feria not in FERIAS:
+                    return render_template("failure.html", message="Error de registro")
+                
+                # Check if username already exists
+                existing_user = db.execute("SELECT * FROM registro_de_empresas WHERE empresa = ?", (empresa,))
+
+                if existing_user:
+                    return apology("Ya existe una empresa registrada con ese nombre!", 400)
+
+                # Ensure password submit
+                elif not request.form.get("password"):
+                    return apology ("Debe ingresar una contraseña para registrar", 400)
+                
+                # Ensure passwords confirmation
+                elif not request.form.get("confirmation"):
+                    return apology("Debe confirmar su contraseña", 400)
+                
+                # Ensure passwords match
+                elif request.form.get("password") != request.form.get("confirmation"):
+                    return apology("La contraseña no coincide", 400)
+
+                try:
+                    # Registrar empresa
+                    db.execute("INSERT INTO registro_de_empresas (empresa, feria, telefono, correo, pais, password, identificador) VALUES(?,?,?,?,?,?,?)", (empresa, feria, telefono, correo, pais, password, identificador))
+                    conn.commit()
+                except Exception as e:
+                    # Debug
+                    print(f"Error insertando en base de datos: {e}")
+                    # Error message
+                    return render_template("failure.html", message=f"Error: {e}")
+
+                return render_template("success.html")
+
+
+
+    
+
 
 # GENERATE ETIQUETA
 @app.route('/generate_qr', methods=["GET", "POST"])

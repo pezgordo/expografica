@@ -1,0 +1,69 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    REGISTRO DE EXPOSITORES
+{% endblock %}
+
+{% block body %}
+
+<div class="container">
+        <!-- Titulo -->
+    <div class="h1 text-white p-3"> REGISTRO DE EXPOSITORES </div>
+    <!-- 1st row - Form Registro de Expositores-->
+    <div class="row p-4">
+        <div class="col-6">
+            <form action="/registro_expositores" method="post">
+
+                <!-- Nombre de la Empresa -->
+                <div class="mb-3">
+                    <label for="nombre_empresa" class="form-label text-white">Nombre de la Empresa</label>
+                    <input autocomplete="off" autofocus class="form-control" id="nombre_empresa" name="nombre_empresa" placeholder="Empresa" type="text">
+                </div>
+
+                <!-- Tipo de Feria -->
+                <div class="mb-3">
+                    <label for="tipo_feria" class="form-label text-white"> Feria </label>
+                    <select class="form-select" id="tipo_feria" name="tipo_feria" aria-label="Default select example">
+                        <option selected disabled>Feria</option>
+                        <option value="GRAFICA">Grafica</option>
+                        <option value="TEXTIL">Textil</option>
+                    </select>
+                </div>
+
+                <!-- Telefono -->
+                <div class="mb-3">
+                    <label for="telefono_empresa" class="form-label text-white">Teléfono</label>
+                    <input autocomplete="off"  class="form-control" id="telefono_empresa" name="telefono_empresa" placeholder="Telefono" type="tel">
+                </div>
+
+                  <!-- Correo -->
+                <div class="mb-3">
+                    <label for="correo_empresa" class="form-label text-white">Correo</label>
+                    <input autocomplete="off"  class="form-control" id="correo_empresa" name="correo_empresa" placeholder="correo" type="email">
+                </div>
+
+                    <!-- Pais -->
+                <div class="mb-3">
+                    <label for="pais_empresa" class="form-label text-white">Pais</label>
+                    <input autocomplete="off"  class="form-control" id="pais_empresa" name="pais_empresa" placeholder="pais" type="text">
+                </div>
+
+                <!-- Contraseña -->
+                <div class="mb-3">
+                    <label for="password" class="form-label text-white">Contraseña</label>
+                    <input class="form-control" id="password" name="password" placeholder="Contraseña" type="password">
+                </div>
+
+                <!-- Confirmar Contraseña -->
+                <div class="mb-3">
+                    <label for="confirmation" class="form-label text-white">Confirmar Contraseña</label>
+                    <input class="form-control" id="confirmation" name="confirmation" placeholder="Confirmar Contraseña" type="password">
+                </div>
+
+                <!-- Boton de Registrar -->
+                <button class="btn btn-primary" type="submit"> Registrar </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
