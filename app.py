@@ -102,6 +102,7 @@ def execute_query(query, args=None):
     connection.close()
     return result
 
+# SERVER FOR LISTA DE VISITANTES TABLE
 @app.route('/api/data')
 def data():
     query = "SELECT * FROM registro_de_visitantes"
@@ -175,6 +176,83 @@ def update():
     execute_query(update_query, tuple(update_values))
 
     return '', 204
+
+
+# SERVER FOR LISTA DE EMPRESAS REGISTRADAS TABLE
+@app.route('/api/data_empresas')
+def data_empresas():
+    query = "SELECT * FROM registro_de_empresas"
+
+    # Search filter
+    search = request.args.get('search')
+    if search:
+        query += " WHERE empresa LIKE ? OR pais LIKE ? OR identificador LIKE ?"
+        search_term = f"%{search}%"
+        args = (search_term, search_term, search_term)
+        query_result = execute_query(query, args)
+    else:
+        query_result = execute_query(query)
+
+    total = len(query_result)
+
+    # Sorting
+    sort = request.args.get('sort')
+    if sort:
+        order = []
+        for s in sort.split(','):
+            direction = s[0]
+            column_name = s[1:]
+            if column_name in ['id', 'empresa','feria', 'pais', 'identificador', 'habilitado']:
+                order.append((column_name, direction))
+        if order:
+            print("ORDER IS: ")
+            print(order[0])
+            # Sort query_result based on the sorting parameters
+            #query_result.sort(key=lambda x: x[0][order[0][0]], reverse=(order[0][1] == '-'))
+            column_indices = {'id': 0, 'empresa': 1, 'feria': 2, 'pais': 3, 'identificador': 4, 'habilitado': 5}
+            #query_result.sort(key=lambda x: x[order[0][0]], reverse=(order[0][1] == '-'))
+            query_result.sort(key=lambda x: x[column_indices[order[0][0]]], reverse=(order[0][1] == '-'))
+
+
+    # Pagination
+    start = request.args.get('start', type=int, default=-1)
+    length = request.args.get('length', type=int, default=-1)
+    if start != -1 and length != -1:
+        query_result = query_result[start:start+length]
+
+    # Response
+    data = [{'id': row[0], 'empresa': row[1], 'feria': row[2], 'telefono': row[3], 'correo': row[4], 'pais': row[5], 'password': row[6], 'identificador': row[7], 'habilitado': row[8]} for row in query_result]
+    return {'data': data, 'total': total}
+
+@app.route('/api/data_empresas', methods=['POST'])
+def update_empresas():
+    data = request.get_json()
+    if 'id' not in data:
+        abort(400)
+
+    query = "SELECT * FROM registro_de_empresas WHERE id = ?"
+    user_id = data['id']
+    user_data = execute_query(query, (user_id,))
+    if not user_data:
+        abort(404)
+
+    # Update fields
+    update_query = "UPDATE registro_de_empresas SET "
+    update_fields = []
+    update_values = []
+    for field in ['empresa', 'feria', 'telefono', 'correo', 'pais', 'password', 'identificador', 'pais', 'feria', 'identificador', 'habilitado']:
+        if field in data:
+            update_fields.append(f"{field} = ?")
+            update_values.append(data[field])
+
+    update_query += ", ".join(update_fields)
+    update_query += " WHERE id = ?"
+    update_values.append(user_id)
+
+    execute_query(update_query, tuple(update_values))
+
+    return '', 204
+
 
 #### End - for table route
 
@@ -452,6 +530,7 @@ def registro_expositores():
     correo = request.form.get("correo_empresa")
     pais = request.form.get("pais_empresa")
     password = request.form.get("password")
+    habilitado = "NO"
 
     while True:
         # Generate random 6 digit number
@@ -462,6 +541,7 @@ def registro_expositores():
         db.execute('SELECT * FROM registro_de_empresas WHERE identificador = ?', (random_number,))
         existing_row = db.fetchone()
         print(existing_row)
+        print(empresa)
 
         # Ensure POST Method
         if request.method == "POST":
@@ -471,9 +551,9 @@ def registro_expositores():
                     return render_template("failure.html", message="Error de registro")
                 
                 # Check if username already exists
-                existing_user = db.execute("SELECT * FROM registro_de_empresas WHERE empresa = ?", (empresa,))
-
+                existing_user = db.execute("SELECT * FROM registro_de_empresas WHERE empresa = ?", (empresa,)).fetchall()
                 if existing_user:
+                    #print(existing_user)
                     return apology("Ya existe una empresa registrada con ese nombre!", 400)
 
                 # Ensure password submit
@@ -490,7 +570,7 @@ def registro_expositores():
 
                 try:
                     # Registrar empresa
-                    db.execute("INSERT INTO registro_de_empresas (empresa, feria, telefono, correo, pais, password, identificador) VALUES(?,?,?,?,?,?,?)", (empresa, feria, telefono, correo, pais, password, identificador))
+                    db.execute("INSERT INTO registro_de_empresas (empresa, feria, telefono, correo, pais, password, identificador, habilitado) VALUES(?,?,?,?,?,?,?,?)", (empresa, feria, telefono, correo, pais, password, identificador, habilitado))
                     conn.commit()
                 except Exception as e:
                     # Debug
@@ -501,8 +581,18 @@ def registro_expositores():
                 return render_template("success.html")
 
 
+# DESREGISTRAR EXPOSITORES
+@app.route("/desregistrar_expositor", methods=["POST"])
+def desregistrar_expositor():
+        # Olvidar empresa
+    id = request.form.get("id")
+    print(f"id: {id}")  # Add this line for debugging
+    if id:
+        print(f"DELETE FROM registro_de_empresas WHERE id = {id}")
+        db.execute("DELETE FROM registro_de_empresas WHERE id = ?", (id,))
+        conn.commit()
 
-    
+    return redirect("/administracion_expositores")
 
 
 # GENERATE ETIQUETA

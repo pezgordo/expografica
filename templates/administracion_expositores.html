@@ -4,8 +4,14 @@
     ADMINISTRACION DE EXPOSITORES
 {% endblock %}
 
-{% block body %}
+{% block head %}
 
+<link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% block body %}
+<!-- ADMINISTRACION DE EXPOSITORES -->
 <div class="container">
         <!-- Titulo -->
     <div class="h1 text-white p-3"> ADMINISTRACION DE EXPOSITORES </div>
@@ -25,10 +31,12 @@
     </div>
 </div>
 
+<!-- LISTA DE EXPOSITORES REGISTRADOS -->
+
 <div class="container-fluid" style="font-size: 12px; text-align: center; padding: 0px; margin: 0px;">
     <div class="row">
         <div class="col d-print-table">
-            <h3 class="text-light"> Lista de Visitantes Registrados</h3>
+            <h3 class="text-light"> Lista de Empresas Registradas</h3>
             <button class="btn btn-secondary hidden-print d-print-none" onclick="window.print();"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Imprimir </button>
             <section>
                 <div>
@@ -40,6 +48,8 @@
         </div>
     </div>
 </div>
+
+
 <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
 <script>
   const tableDiv = document.getElementById('table');
@@ -60,23 +70,21 @@
   new gridjs.Grid({
     columns: [
       { id: 'id', name: 'ID' },
-      { id: 'empresa', name: 'Empresa', sort: false },
-      { id: 'nombre', name: 'Nombre', 'attributes': editableCellAttributes },
-      { id: 'cargo', name: 'Cargo', sort: false },
-      { id: 'documento', name: 'Documento', sort: true },
+      { id: 'empresa', name: 'Empresa', sort: true, 'attributes':editableCellAttributes },
+      { id: 'feria', name: 'Feria', sort: true},
       { id: 'telefono', name: 'Telefono', sort: false },
       { id: 'correo', name: 'Correo', sort: false },
-      { id: 'ciudad', name: 'Ciudad', sort: false },
-      { id: 'pais', name: 'Pais' },
-      { id: 'feria', name: 'Feria' },
-      { id: 'identificador', name: 'Identificador' },
+      { id: 'pais', name: 'Pais', sort: false },
+      { id: 'password', name: 'Password', sort: false },
+      { id: 'identificador', name: 'Identificador', sort: true },
+      { id: 'habilitado', name: 'Habilitado', sort: true },
       {
         name: 'Desregistrar', sort: false,
         formatter: (_, row) =>
-                gridjs.html(`<form action="/desregistrarse" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Desregistrar</button></form>`)       
+                gridjs.html(`<form action="/desregistrar_expositor" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Desregistrar</button></form>`)       
       },
       {
-        name: 'Imprimir Etiqueta', sort: false,
+        name: 'Administrar Empresa', sort: false,
         formatter: (_, row) =>
                 gridjs.html(`<form action="/generate_qr" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Imprimir Etiqueta</button></form>`)       
       },
@@ -84,7 +92,7 @@
       
     ],
     server: {
-      url: '/api/data',
+      url: '/api/data_empresas',
       then: results => results.data,
       total: results => results.total,
     },
@@ -102,7 +110,7 @@
       multiColumn: true,
       server: {
         url: (prev, columns) => {
-          const columnIds = ['id', 'empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador'];
+          const columnIds = ['id', 'empresa', 'feria', 'telefono', 'correo', 'pais', 'password', 'identificador', 'habilitado'];
           const sort = columns.map(col => (col.direction === 1 ? '+' : '-') + columnIds[col.index]);
           return updateUrl(prev, {sort});
         },
@@ -145,7 +153,7 @@
   tableDiv.addEventListener('focusout', ev => {
     if (ev.target.tagName === 'TD') {
       if (savedValue !== ev.target.textContent) {
-        fetch('/api/data', {
+        fetch('/api/data_empresas', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
