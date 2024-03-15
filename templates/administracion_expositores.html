@@ -18,15 +18,10 @@
     <!-- 1st row - Form Registro de Expositores-->
     <div class="row p-4">
         <div class="col">
-            <div class="h6"> Registro de Expositores</div>
+            <div class="h6 text-white"> Registro de Expositores</div>
         </div>
         <div class="col">
             <button class="btn btn-primary" onclick="location.href='{{ url_for('formulario_registro_expositores') }}'"> Nuevo Registro </button>
-        </div>
-    </div>
-    <div class="row p-4">
-        <div class="col">
-            <div class="h6"> Ver Expositores Registrados</div>
         </div>
     </div>
 </div>
@@ -78,15 +73,23 @@
       { id: 'password', name: 'Password', sort: false },
       { id: 'identificador', name: 'Identificador', sort: true },
       { id: 'habilitado', name: 'Habilitado', sort: true },
+
+      {
+        name: 'Habilitar', sort: false,
+        formatter: (_, row) =>
+                gridjs.html(`<form action="/habilitar_expositor" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Habilitar</button></form>`)       
+      },
+
+      {
+        name: 'Administrar Empresa', sort: false,
+        formatter: (_, row) =>
+                gridjs.html(`<form action="/administrar_expositor_individual" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Administrar</button></form>`)       
+      },
+
       {
         name: 'Desregistrar', sort: false,
         formatter: (_, row) =>
                 gridjs.html(`<form action="/desregistrar_expositor" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Desregistrar</button></form>`)       
-      },
-      {
-        name: 'Administrar Empresa', sort: false,
-        formatter: (_, row) =>
-                gridjs.html(`<form action="/generate_qr" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Imprimir Etiqueta</button></form>`)       
       },
       
       

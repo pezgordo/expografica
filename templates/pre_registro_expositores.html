@@ -38,7 +38,7 @@
 
 
 {% block body %}
-.quit
+
 <div class="container-fluid">
         <section class="contenedor-main row">
             <main class="col-sm-12 col-md-12 col-lg-6 ms-sm-0 px-md-5">
@@ -46,19 +46,19 @@
                     <button onclick="changeLanguage('en')" class="flag-icon flag-icon-us flag-button" title="English"></button>
                     <button onclick="changeLanguage('es')" class="flag-icon flag-icon-es flag-button" title="Español"></button>
                 </div>
-                <h2 id="title_lang">Registro de Expositores</h2>
+                <h2 id="title_lang">Pre Registro de Expositores</h2>
                 <!-- CAMBIAR ESTO -->
-                <form method="post" action="/registro">
+                <form method="post" action="/registro_expositores">
                     
                     <!-- Nombre de la Empresa -->
                     <div class="form-group mb-2">
-                        <label for="empresa"  class="form-label text-white" id="empresa_lang">Empresa:</label>
-                        <input type="text" class="form-control" id="empresa" name="empresa" required>
+                        <label for="nombre_empresa"  class="form-label text-white" id="empresa_lang">Empresa:</label>
+                        <input type="text" class="form-control" id="nombre_empresa" name="nombre_empresa" required>
                     </div>
 
                     <!-- Telefono de la Empresa -->
                     <div class="form-group mb-2">
-                        <label for="telefono" class="form-label text-white" id="telefono_lang">Celular:</label>
+                        <label for="telefono_empresa" class="form-label text-white" id="telefono_lang">Celular:</label>
                         
                         <div class="select-box myDIV">
                             <div class="selected-option" aria-label="Selected country: Bolivia">
@@ -67,7 +67,7 @@
                                     <strong>+591</strong>
                                 </div>
                                 
-                                <input type="tel" placeholder="Whatsapp" class="form-control" id="telefono" name="telefono" required> 
+                                <input type="tel" placeholder="Whatsapp" class="form-control" id="telefono_empresa" name="telefono_empresa" required> 
                             </div>
                             <div class="options">
                                 <input type="text" class="search-box" id="searchInput" placeholder="Elige Tu Pais">
@@ -81,16 +81,16 @@
                         
                     <!-- Correo de la empresa -->
                     <div class="form-group mb-2">
-                        <label for="correo" class="form-label text-white" id="correo_lang">Correo Electronico:</label>
-                        <input type="email" class="form-control" id="correo" name="correo" required>
+                        <label for="correo_empresa" class="form-label text-white" id="correo_lang">Correo Electronico:</label>
+                        <input type="email" class="form-control" id="correo_empresa" name="correo_empresa" required>
 
                     </div>
 
 
                     <!-- Pais de la empresa -->
                     <div class="form-group mb-2">
-                        <label for="Pais" class="form-label text-white" id="pais_lang">Pais:</label>
-                        <select class="form-control" id="pais" name="pais" required>
+                        <label for="pais_empresa" class="form-label text-white" id="pais_lang">Pais:</label>
+                        <select class="form-control" id="pais_empresa" name="pais_empresa" required>
                             <option selected disabled id="drop_lang">Elige tu Pais</option>
                             <option value="Bolivia">Bolivia</option>
                             <option value="Argentina">Argentina</option>
@@ -106,13 +106,49 @@
         
 
                     <div class="form-group mb-2">
-                        <input type="hidden" name="feria" value="{{ var_feria }}">
+                        <input type="hidden" name="tipo_feria" value="{{ var_feria }}">
+                    </div>
+                    <div class="form-group mb-2">
+                        <input type="hidden" name="password" value="{{ var_feria }}">
+                    </div>
+                    <div class="form-group mb-2">
+                        <input type="hidden" name="confirmation" value="{{ var_feria }}">
                     </div>
 
 
 
                 <button type="submit" class="botoncito" id="boton_lang">Registrar</button>
             </form>
+
+
+
+            <!-- linea blanca horizontal -->
+            <hr class="hr text-white" />
+
+
+
+            <!-- YA ESTA REGISTRADO -->
+            <!-- LOGIN -->
+            <div class="h6 text-white pt-3" id="ya_registrado_lang">Ya estas Registrado? Ingresa aqui: </div>
+            <form method="post" action="/empresa_login">
+
+                <!-- Nombre de la Empresa -->
+                <div class="form-group mb-2 pt-3">
+                    <label for="nombre_empresa"  class="form-label text-white" id="empresa_lang_2">Empresa:</label>
+                    <input type="text" class="form-control mx-auto" id="nombre_empresa" name="nombre_empresa" required>
+                </div>
+
+                <!-- Contraseña -->
+                <div class="form-group mb-2">
+                    <label for="password"  class="form-label text-white" id="password_lang">Contraseña:</label>
+                    <input type="password" class="form-control mx-auto" id="password" name="password" required>
+                </div>
+
+                <!-- Ingresar -->
+                <button type="submit" class="botoncito" id="boton_ingresar_lang">Ingresar</button>
+            </form>
+
+
             </main> 
             <aside class="col-sm-12 col-md-12 col-lg-6">
                 <div class="col-12">
@@ -180,7 +216,22 @@
             const instrucciones = {
                 'en': '*Enter your number without spaces after the country code.',
                 'es': '*Introduce tu numero sin espacios despues del codigo pais.',
-            }
+            };
+
+            const password = {
+                'en': 'Password',
+                'es': 'Contraseña',
+            };
+
+            const ya_registrado = {
+                'en': 'Already Registered? Log In here: ',
+                'es': 'Ya estas registrado? Ingresa aqui: ',
+            };
+
+            const boton_ingresar = {
+                'en': 'Log In',
+                'es': 'Ingresar',
+            };
 
 
             document.getElementById('title_lang').textContent = title[language];
@@ -193,6 +244,11 @@
 
             document.getElementById('searchInput').placeholder = placeholders[language];
             document.getElementById('instrucciones_lang').textContent = instrucciones[language];
+
+            document.getElementById('empresa_lang_2').textContent = empresa[language];
+            document.getElementById('password_lang').textContent = password[language];
+            document.getElementById('ya_registrado_lang').textContent = ya_registrado[language];
+            document.getElementById('boton_ingresar_lang').textContent= boton_ingresar[language];
 
         }
     </script>

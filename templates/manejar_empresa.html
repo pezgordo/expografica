@@ -1,0 +1,61 @@
+{% if var_feria == 'TEXTIL' %}
+    {% extends "layout_textil.html" %}
+
+{% else %}
+    {% extends "layout.html" %}
+{% endif %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+    
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="h1 text-white" > Bienvenida empresa: {{ empresa }}</div>
+            <h1 class="text-white">
+                Bienvenida empresa: 
+                <small class="text-body-light"> {{ empresa }}</small>
+            </h1>
+        </div>
+    </div>
+
+
+</div>
+    <h1>Manage Company</h1>
+    
+    <h2>Company Details</h2>
+    <p>ID de la empresa: {{ id }}</p>
+    <p>Nombre de la empresa: {{ empresa }}</p>
+    <p>Feria a la que asistira: {{ feria }}</p>
+    <p>Telefono de la empresa: {{ telefono }}</p>
+    <p>Correo de la empresa: {{ correo }}</p>
+    <p>Pais de la empresa: {{ pais }}</p>
+    <p>Contraseña de la cuenta: {{ password }}</p>
+    <p>Identificador de la empresa: {{ identificador }}</p>
+    <p>Empresa habilitada: {{ habilitado }}</p>
+
+    <p></p>
+    
+    <!-- Add more details as needed -->
+
+    <form method="post" action="/empresa_login">
+
+        <!-- Nombre del Empleado -->
+        <div class="form-group mb-2 pt-3">
+            <label for="nombre_empleado"  class="form-label text-white" id="nombre_empleado_id">Empresa:</label>
+            <input type="text" class="form-control mx-auto" id="nombre_empleado" name="nombre_empleado" required>
+        </div>
+
+        <!-- Empresa del Empleado -->
+        <div class="form-group mb-2">
+            <label for="empresa_empleado"  class="form-label text-white" id="password_lang">Contraseña:</label>
+            <input type="password" class="form-control mx-auto" id="password" name="password" required>
+        </div>
+
+        <!-- Ingresar -->
+        <button type="submit" class="botoncito" id="boton_ingresar_lang">Ingresar</button>
+    </form>
+
+{% endblock %}

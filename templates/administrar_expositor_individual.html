@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    ADMINISTRACION DE EXPOSITORES
+{% endblock %}
+
+{% block head %}
+
+<link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <!-- Titulo -->
+<div class="h1 text-white p-3"> REGISTRO DE EMPLEADOS </div>
+<!-- 1st row - Form Registro de Expositores-->
+<div class="row p-4">
+    <div class="col-6">
+        <form action="/registro_expositoress" method="post">
+
+            <!-- Nombre del empleado -->
+            <div class="mb-3">
+                <label for="nombre_empleado" class="form-label text-white">Nombre</label>
+                <input autocomplete="off" autofocus class="form-control" id="nombre_empleado" name="nombre_empleado" placeholder="Nombre del Empleado" type="text">
+            </div>
+
+            <!-- Tipo de Feria -->
+            <div class="mb-3">
+                <label for="tipo_feria" class="form-label text-white"> Feria </label>
+                <select class="form-select" id="tipo_feria" name="tipo_feria" aria-label="Default select example">
+                    <option selected disabled>Feria</option>
+                    <option value="GRAFICA">Grafica</option>
+                    <option value="TEXTIL">Textil</option>
+                </select>
+            </div>
+
+            <!-- Cargo del empleado -->
+            <div class="mb-3">
+                <label for="cargo_empleado" class="form-label text-white">Cargo</label>
+                <input autocomplete="off"  class="form-control" id="cargo_empleado" name="cargo_empleado" placeholder="Cargo del empleado" type="text">
+            </div>
+
+            <!-- Telefono del empleado -->
+            <div class="mb-3">
+                <label for="telefono_empleado" class="form-label text-white">Teléfono</label>
+                <input autocomplete="off"  class="form-control" id="telefono_empleado" name="telefono_empleado" placeholder="Telefono del empleado" type="tel">
+            </div>
+
+              <!-- Correo del empleado -->
+            <div class="mb-3">
+                <label for="correo_empleado" class="form-label text-white">Correo</label>
+                <input autocomplete="off"  class="form-control" id="correo_empleado" name="correo_empleado" placeholder="Correo del empleado" type="email">
+            </div>
+
+
+            <!-- Boton de Registrar -->
+            <button class="btn btn-primary" type="submit"> Registrar </button>
+        </form>
+    </div>
+</div>
+</div>
+
+{% endblock %}

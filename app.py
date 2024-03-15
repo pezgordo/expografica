@@ -176,7 +176,7 @@ def update():
     execute_query(update_query, tuple(update_values))
 
     return '', 204
-
+#####
 
 # SERVER FOR LISTA DE EMPRESAS REGISTRADAS TABLE
 @app.route('/api/data_empresas')
@@ -315,6 +315,7 @@ def register():
 
 
 
+
             ###-------Generar QR--------------
 
 
@@ -420,6 +421,8 @@ def register():
             ###############################
             # Confirm registration
             return render_template("success.html")
+
+
 
 
 # LISTA DE REGISTRANTES
@@ -542,6 +545,7 @@ def registro_expositores():
         existing_row = db.fetchone()
         print(existing_row)
         print(empresa)
+        print(feria)
 
         # Ensure POST Method
         if request.method == "POST":
@@ -581,6 +585,27 @@ def registro_expositores():
                 return render_template("success.html")
 
 
+# HABILITAR EXPOSITORES
+@app.route("/habilitar_expositor", methods=["POST"])
+def habilitar_expositor():
+    id = request.form.get("id")
+    print(f"id: {id}")  # Add this line for debugging
+    if id:
+        #print(f"DELETE FROM registro_de_empresas WHERE id = {id}")
+        
+        db.execute("UPDATE registro_de_empresas SET habilitado = 'SI' WHERE id = ?", (id,))
+        conn.commit()
+
+    return redirect("/administracion_expositores")
+
+
+# ADMINISTRAR EXPOSITOR INDIVIDUAL
+@app.route("/administrar_expositor_individual", methods=["POST"])
+def administrar_expositor():
+
+    return render_template("administrar_expositor_individual.html")
+
+
 # DESREGISTRAR EXPOSITORES
 @app.route("/desregistrar_expositor", methods=["POST"])
 def desregistrar_expositor():
@@ -594,6 +619,23 @@ def desregistrar_expositor():
 
     return redirect("/administracion_expositores")
 
+
+# PRE REGISTRO DE EXPOSITORES
+@app.route("/pre_registro_expositores")
+def pre_registro_expositores():
+
+    referring_site = request.headers.get('Referer')
+    print(referring_site)
+
+    if referring_site and 'https://expograficabolivia.com.bo/' in referring_site:
+        var_feria = 'GRAFICA'
+    elif referring_site and 'https://boliviatextil.com.bo/' in referring_site:
+        var_feria = 'TEXTIL'
+    else:
+        var_feria = 'GRAFICA'
+
+    return render_template("pre_registro_expositores.html", var_feria=var_feria)
+  
 
 # GENERATE ETIQUETA
 @app.route('/generate_qr', methods=["GET", "POST"])
@@ -771,5 +813,131 @@ def generate_qr():
     else:
         return redirect("/")
 
+
+# MANEJO INDIVIDUAL DE EMPRESAS
+# EMPRESA LOGIN
+@app.route("/empresa_login", methods=["GET", "POST"])
+#@app.route('/manejar_empresa/<int:empresa_id>', methods=['GET', 'POST'])
+def empresa_login():
+
+    # Forget any user_id
+    session.clear()
+
+    # Reached via POST
+    if request.method == "POST":
+
+        #DEBUG
+        print("empresa name: " + request.form.get("nombre_empresa"))
+        print("empresa password: " + request.form.get("password"))
+
+        # Asegurar nombre de empresa
+        if not request.form.get("nombre_empresa"):
+            return apology("nombre de empresa no valido / Invalid company name", 403)
+        # Asegurar contraseña de empresa
+        elif not request.form.get("password"):
+            return apology("Debe introducir la contraseña / Must provide password", 403)
+        # Query base de datos por nombre de empresa
+        rows = db.execute("SELECT * FROM registro_de_empresas WHERE empresa = ?", (request.form.get("nombre_empresa"),))
+
+        #DEBUG
+        #print(rows)
+        #print(rows.fetchone())
+        row = rows.fetchone()
+        
+        #print(len(rows))
+        
+        # Asegurar que la empresa existe y la contraseña es la correcta
+        
+        # Check if any rows were fetched
+        if not row:
+            return apology("Nombre de Empresa invalida / Invalid company name", 403)
+            
+        else:
+            # Check password
+            if row[6] == request.form.get("password"):
+
+                # Recordar que usuario a loggeado 
+                session["user_id"] = row[0]
+
+                # Redirect user to manejar_empresa.html
+                #return redirect("/") 
+                return redirect("/manejar_empresa")
+            else:
+                return apology("Contraseña invalida / Invalid Password")
+
+    # Reached via GET
+    else:
+        return render_template("pre_registro_expositores.html")
+
+
+# MANEJAR EMPRESA
+@app.route("/manejar_empresa", methods=["GET", "POST"])
+@login_required
+def manejar_empresa():
+    user_id = session.get("user_id")
+
+        #generate random number
+    def generate_random_number():
+        return random.randint(100000, 999999)
+    #telefono = db.execute("SELECT DISTINCT telefono FROM registro_de_empresas WHERE id = ?", (user_id,)).fetchall()
+    #telefono = db.execute("SELECT telefono FROM registro_de_empresas WHERE id = ?", (user_id,)).fetchone()
+    #if telefono:
+    #    telefono = telefono[0]
+    #    print(telefono)
+
+    informacion = db.execute("SELECT * FROM registro_de_empresas WHERE id = ?", (user_id,)).fetchone()
+    print (informacion)
+    print("id: " + str(informacion[0]))
+    print("empresa: " + str(informacion[1]))
+    print("feria: " + str(informacion[2]))
+    print("telefono: " + str(informacion[3]))
+    print("correo: " + str(informacion[4]))
+    print("pais:" + str(informacion[5]))
+    print("password: " + str(informacion[6]))
+    print("identificador: " + str(informacion[7]))
+    print("habilitado: " + str(informacion[8]))
+
+    id = informacion[0]
+    empresa = informacion[1]
+    feria = informacion[2]
+    telefono = informacion[3]
+    correo = informacion[4]
+    pais = informacion[5]
+    password = informacion[6]
+    identificador = informacion[7]
+    habilitado = informacion[8]
+
+    nombre_empleado = request.form.get("nombre_empleado")
+    empresa_empleado = request.form.get("empresa_empleado")
+    cargo_empleado = request.form.get("cargo_empleado")
+    telefono_empleado = request.form.get("telefono_empleado")
+    correo_empleado = request.form.get("correo_empleado")
+    
+    while True:
+        # Generar codigo aleatorio
+        random_number = generate_random_number()
+        identificador = random_number
+
+        #check if the number exists in the table
+        db.execute('SELECT * FROM registro_de_empleados WHERE identificador = ?', (random_number,))
+        existing_row = db.fetchone()
+
+        if existing_row is None:
+
+            try:
+                # Recordar registrante
+                db.execute("INSERT INTO registro_de_empleados (nombre_empleado, empresa, cargo, telefono, correo, identificador) VALUES(?, ?, ?, ?, ?, ?)", (nombre_empleado, empresa_empleado, cargo_empleado, telefono_empleado, correo_empleado, identificador))
+                conn.commit()
+            except Exception as e:
+                print(f"Error insertando en base de datos: {e}")
+                return render_template("failure.html", message=f"Error: {e}")
+
+    
+
+
+  
+
+
+        return render_template("manejar_empresa.html", id=id, empresa=empresa, feria=feria, telefono=telefono, correo=correo, pais=pais, password=password, identificador=identificador, habilitado=habilitado)
 if __name__ == '__main__':
     app.run(debug=True)
