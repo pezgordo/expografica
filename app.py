@@ -20,6 +20,14 @@ import json
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+
+# Set DEBUG mode
+app.debug = False  # Set to True for development, False for production
+
+# Set allowed hosts
+ALLOWED_HOSTS = ['*']  # Accept requests from any host/domain
+
+
 #app.secret_key = 'clave_secreta'
 
 
@@ -940,4 +948,4 @@ def manejar_empresa():
 
         return render_template("manejar_empresa.html", id=id, empresa=empresa, feria=feria, telefono=telefono, correo=correo, pais=pais, password=password, identificador=identificador, habilitado=habilitado)
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
