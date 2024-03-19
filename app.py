@@ -948,4 +948,4 @@ def manejar_empresa():
 
         return render_template("manejar_empresa.html", id=id, empresa=empresa, feria=feria, telefono=telefono, correo=correo, pais=pais, password=password, identificador=identificador, habilitado=habilitado)
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000)
