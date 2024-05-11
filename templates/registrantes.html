@@ -1,3 +1,5 @@
+<!-- registrantes.html -->
+
 {% extends "layout.html" %}
 
 {% block head %}
@@ -7,7 +9,11 @@
 {% endblock %}
 
 {% block body %}
+<!-- Boton para volver a Administracion-->
+<button class="btn btn-light btn-sm" type="submit" onclick="location.href='{{ url_for('administracion') }}'"> Volver a Administración </button>
+
     <div class="container-fluid" style="font-size: 12px; text-align: center; padding: 0px; margin: 0px;">
+
         <div class="row">
             <div class="col d-print-table">
                 <h3 class="text-light"> Lista de Visitantes Registrados</h3>
@@ -52,6 +58,7 @@
           { id: 'pais', name: 'Pais' },
           { id: 'feria', name: 'Feria' },
           { id: 'identificador', name: 'Identificador' },
+          { id: 'fecha_de_registro', name: 'Fecha' },
           {
             name: 'Desregistrar', sort: false,
             formatter: (_, row) =>
@@ -84,7 +91,7 @@
           multiColumn: true,
           server: {
             url: (prev, columns) => {
-              const columnIds = ['id', 'empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador'];
+              const columnIds = ['id', 'empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador', 'fecha_de_registro'];
               const sort = columns.map(col => (col.direction === 1 ? '+' : '-') + columnIds[col.index]);
               return updateUrl(prev, {sort});
             },

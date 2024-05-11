@@ -1,3 +1,4 @@
+<!-- administracion_expositores.html -->
 {% extends "layout.html" %}
 
 {% block title %}
@@ -11,19 +12,22 @@
 {% endblock %}
 
 {% block body %}
+<!-- Boton de Regreso al modulo de administracion -->
+<button class="btn btn-light btn-sm" type="submit" onclick="location.href='{{ url_for('administracion') }}'"> Volver a Administracion </button>
+
 <!-- ADMINISTRACION DE EXPOSITORES -->
 <div class="container">
-        <!-- Titulo -->
-    <div class="h1 text-white p-3"> ADMINISTRACION DE EXPOSITORES </div>
-    <!-- 1st row - Form Registro de Expositores-->
-    <div class="row p-4">
-        <div class="col">
-            <div class="h6 text-white"> Registro de Expositores</div>
-        </div>
-        <div class="col">
-            <button class="btn btn-primary" onclick="location.href='{{ url_for('formulario_registro_expositores') }}'"> Nuevo Registro </button>
-        </div>
-    </div>
+  <!-- Titulo -->
+  <div class="h1 text-white p-3"> ADMINISTRACION DE EXPOSITORES </div>
+  <!-- 1st row - Form Registro de Expositores-->
+  <div class="row p-4">
+      <div class="col">
+          <div class="h6 text-white"> Registro de Expositores</div>
+      </div>
+      <div class="col">
+          <button class="btn btn-light" onclick="location.href='{{ url_for('formulario_registro_expositores') }}'"> Registrar Nuevo Expositor </button>
+      </div>
+  </div>
 </div>
 
 <!-- LISTA DE EXPOSITORES REGISTRADOS -->
@@ -33,6 +37,7 @@
         <div class="col d-print-table">
             <h3 class="text-light"> Lista de Empresas Registradas</h3>
             <button class="btn btn-secondary hidden-print d-print-none" onclick="window.print();"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Imprimir </button>
+
             <section>
                 <div>
                     <div id="table"></div>

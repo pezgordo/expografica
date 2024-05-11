@@ -1,3 +1,4 @@
+<!-- formulario_registro_expositores.html -->
 {% extends "layout.html" %}
 
 {% block title %}
@@ -5,13 +6,15 @@
 {% endblock %}
 
 {% block body %}
-
+ <!-- Boton de regreso -->
+<button class="btn btn-light btn-sm" type="submit" onclick="location.href='{{ url_for('administracion_expositores') }}'"> Volver a Administración de Expositores </button>
 <div class="container">
-        <!-- Titulo -->
+    <!-- Titulo -->
     <div class="h1 text-white p-3"> REGISTRO DE EXPOSITORES </div>
     <!-- 1st row - Form Registro de Expositores-->
     <div class="row p-4">
         <div class="col-6">
+
             <form action="/registro_expositores" method="post">
 
                 <!-- Nombre de la Empresa -->

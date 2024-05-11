@@ -1,3 +1,5 @@
+<!-- administracion.html -->
+
 {% extends "layout.html" %}
 
 {% block title %}
@@ -7,41 +9,34 @@
 {% block body %}
 
 <div class="container">
-        <!-- Titulo -->
-        <div class="h1 text-white p-3"> MODULO DE ADMINISTRACION </div>
-        <!-- 1st row - Lista de Visitantes Registrados-->
-        <div class="row p-4">
-            <div class="col">
-                <div class="h6 text-white"> Administracion de Visitantes</div>
-            </div>
-            <div class="col">
-                <button class="btn btn-primary" type="submit" onclick="location.href='{{ url_for('registrantes') }}'"> Ingresar </button>
-            </div>  
-        </div>    
-        <!-- 2nd row - Administracion de Expositores-->
-        <div class="row p-4">
-            <div class="col">
-                <div class="h6 text-white"> Administracion de Expositores</div>
-            </div>
-            <div class="col">
-                <button class="btn btn-primary" type="submit" onclick="location.href='{{ url_for('administracion_expositores') }}'"> Ingresar</button>
-            </div>
+    <!-- Titulo -->
+    <div class="h1 text-white p-3"> MODULO DE ADMINISTRACION </div>
+    <!-- 1st row - Lista de Visitantes Registrados-->
+    <div class="row p-4">
+        <div class="col">
+            <div class="h6 text-white"> Administracion de Visitantes</div>
         </div>
-        <!-- 3er row - Administracion de Conferencias -->
-        <div class="row p-4">
-            <div class="col">
-                <div class="h6 text-white"> Administracion de Conferencias</div>
-            </div>
-            <div class="col">
-                <button class="btn btn-primary" type="submit"> Ingresar</button>
-            </div>
+        <div class="col">
+            <button class="btn btn-light" type="submit" onclick="location.href='{{ url_for('registrantes') }}'"> Ingresar </button>
+        </div>  
+    </div>    
+    <!-- 2nd row - Administracion de Expositores-->
+    <div class="row p-4">
+        <div class="col">
+            <div class="h6 text-white"> Administracion de Expositores</div>
+        </div>
+        <div class="col">
+            <button class="btn btn-light" type="submit" onclick="location.href='{{ url_for('administracion_expositores') }}'"> Ingresar</button>
         </div>
     </div>
-</div>
-
-
-
-
-
+    <!-- 3er row - Administracion de Conferencias -->
+    <div class="row p-4">
+        <div class="col">
+            <div class="h6 text-white"> Administracion de Conferencias</div>
+        </div>
+        <div class="col">
+            <button class="btn btn-light" type="submit"> Ingresar</button>
+        </div>
+    </div>
 </div>
 {% endblock %}

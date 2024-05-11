@@ -7,6 +7,8 @@ from PIL import Image
 from flask_session import Session
 from helpers import apology
 from functools import wraps
+import datetime
+from datetime import date
 
 
 #---Imports WHATSAPP BOT---#
@@ -14,10 +16,8 @@ from functools import wraps
 import requests
 import json
 
-#---Imports WHATSAPP BOT ---#
-
-
-basedir = os.path.abspath(os.path.dirname(__file__))
+#---Imports WHATSAPP BOT END ---#
+#basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 
@@ -30,14 +30,10 @@ ALLOWED_HOSTS = ['*']  # Accept requests from any host/domain
 
 #app.secret_key = 'clave_secreta'
 
-
-
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
-
 
 # SQLite3 Conectar a base de datos
 conn = sqlite3.connect('datos_feria.db', check_same_thread=False)
@@ -51,6 +47,8 @@ FERIAS = [
     "TEXTIL",
     "GRAFICA"
 ]
+
+
 
 ### login required func
 def login_required(f):
@@ -67,6 +65,7 @@ def login_required(f):
     return decorated_function
 
 
+
 # AFTER REQUEST
 @app.after_request
 def after_request(response):
@@ -75,6 +74,7 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
+
 
 
 # INDEX
@@ -93,6 +93,9 @@ def index():
 
     return render_template("index.html", var_feria=var_feria)
   
+
+
+
 # FLASK GRID
 #### for table route - flask-grid ###
 
@@ -132,18 +135,22 @@ def data():
     if sort:
         order = []
         for s in sort.split(','):
-            direction = s[0]
-            column_name = s[1:]
-            if column_name in ['id', 'nombre', 'documento', 'pais', 'feria', 'identificador']:
+            if len(s) < 2:
+                continue # Skip if sorting parameter is invalid
+            direction = s[0] # Direction: '+' (ascending) or '-' (descending)
+            column_name = s[1:] # Column name to sort by
+            if column_name in ['id', 'nombre', 'documento', 'pais', 'feria', 'identificador', 'fecha_de_registro']:
                 order.append((column_name, direction))
         if order:
             print("ORDER IS: ")
             print(order[0])
-            # Sort query_result based on the sorting parameters
-            #query_result.sort(key=lambda x: x[0][order[0][0]], reverse=(order[0][1] == '-'))
-            column_indices = {'id': 0, 'nombre': 1, 'documento': 2, 'pais': 3, 'feria': 4, 'identificador': 5}
-            #query_result.sort(key=lambda x: x[order[0][0]], reverse=(order[0][1] == '-'))
-            query_result.sort(key=lambda x: x[column_indices[order[0][0]]], reverse=(order[0][1] == '-'))
+
+            column_indices = {'id': 0, 'nombre': 2, 'documento': 4, 'pais': 8, 'feria': 9, 'identificador': 10, 'fecha_de_registro': 11}
+
+            query_result.sort(key=lambda x: x[column_indices[order[0][0]]] if x[column_indices[order[0][0]]] is not None else "", reverse=(order[0][1] == '-'))
+
+
+
 
 
     # Pagination
@@ -153,7 +160,7 @@ def data():
         query_result = query_result[start:start+length]
 
     # Response
-    data = [{'id': row[0], 'empresa': row[1], 'nombre': row[2], 'cargo': row[3], 'documento': row[4], 'telefono': row[5], 'correo': row[6], 'ciudad': row[7],  'pais': row[8], 'feria': row[9], 'identificador': row[10]} for row in query_result]
+    data = [{'id': row[0], 'empresa': row[1], 'nombre': row[2], 'cargo': row[3], 'documento': row[4], 'telefono': row[5], 'correo': row[6], 'ciudad': row[7],  'pais': row[8], 'feria': row[9], 'identificador': row[10], 'fecha_de_registro': row[11]} for row in query_result]
     return {'data': data, 'total': total}
 
 @app.route('/api/data', methods=['POST'])
@@ -172,7 +179,7 @@ def update():
     update_query = "UPDATE registro_de_visitantes SET "
     update_fields = []
     update_values = []
-    for field in ['empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador']:
+    for field in ['empresa', 'nombre', 'cargo', 'documento', 'telefono', 'correo', 'ciudad', 'pais', 'feria', 'identificador', 'fecha_de_registro']:
         if field in data:
             update_fields.append(f"{field} = ?")
             update_values.append(data[field])
@@ -297,6 +304,7 @@ def register():
     ciudad = request.form.get("ciudad")
     pais = request.form.get("pais")
     feria = request.form.get("feria")
+    fecha = date.today()
     
     
     while True:
@@ -304,7 +312,7 @@ def register():
         random_number = generate_random_number()
         identificador = random_number
 
-        #check if the number exists in the table
+        #check if the identificador number exists in the table
         db.execute('SELECT * FROM registro_de_visitantes WHERE identificador = ?', (random_number,))
         existing_row = db.fetchone()
 
@@ -315,7 +323,7 @@ def register():
             try:
 
                 # Recordar registrante
-                db.execute("INSERT INTO registro_de_visitantes (empresa, nombre, cargo, documento, telefono, correo, ciudad, pais, feria, identificador) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (empresa, nombre, cargo, documento, telefono, correo, ciudad, pais, feria, random_number))
+                db.execute("INSERT INTO registro_de_visitantes (empresa, nombre, cargo, documento, telefono, correo, ciudad, pais, feria, identificador, fecha_de_registro) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (empresa, nombre, cargo, documento, telefono, correo, ciudad, pais, feria, random_number, fecha))
                 conn.commit()
             except Exception as e:
                 print(f"Error insertando en base de datos: {e}")
@@ -419,7 +427,7 @@ def register():
             })
             headers = {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer EAAExyzOF11QBO22RcOKLdbkokOE54IMxQXG3pFJ5ske4JFdH3U3amwM4xachVJPQO5ADayLk4rk55eM9dgLIqCCpyFHKZBcsRBj9bhtCLgySrkVI7NGD2IZBkGW6Mqy54JTfHuLm5Crg7zNdDHrVyhI7IyicNk8R4eoKe7mBpp7gNxqN6O6mZBCbjZBlzre5jFybHCzDVVIZBWzm5'
+            'Authorization': 'Bearer EAAExyzOF11QBOwtZAJ1gOjVxPhlmuE6UxgxKfn0xR8Aqr1oadeS2GQTl1m2DZC4xUfmFoaAd0udaOOvKqDjgIZAnV7S91bHFWJPEzrywL61NWdmnZAoEYsjG1AgFaaiZAMkHKQb8KlK0LQToK5ZA4PYDZBzN2Wv0DxR76U0OJeFuXUfgZCzGDbUa9cIhJYcSKBsp'
             }
 
             response = requests.request("POST", url, headers=headers, data=payload)
@@ -518,11 +526,13 @@ def administracion_expositores():
 
     return render_template("administracion_expositores.html", empresas_registradas=empresas_registradas)
 
+
 # FORMULARIO DE REGISTRO EXPOSITORES
 @app.route("/formulario_registro_expositores")
 def formulario_registro_expositores():
 
     return render_template("formulario_registro_expositores.html")
+
 
 
 # REGISTRO DE EXPOSITORES
