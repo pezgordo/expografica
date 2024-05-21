@@ -14,30 +14,67 @@
     <div class="row">
         <div class="col">
             <div class="h1 text-white" > Bienvenida empresa: {{ empresa }}</div>
-            <h1 class="text-white">
-                Bienvenida empresa: 
-                <small class="text-body-light"> {{ empresa }}</small>
-            </h1>
         </div>
+    <div class="row">
+        <div class="col text-light">
+
+            <h6>Feria a la que asistira: {{ feria }}</h4>
+            <h6>Telefono de la empresa: {{ telefono }}</h4>
+            <h6>Correo de la empresa: {{ correo }}</h4>
+            <h6>Pais de la empresa: {{ pais }}</h4>
+            <h6>Contraseña de la cuenta: {{ password }}</h4>
+            <h6>Identificador de la empresa: {{ identificador }}</h4>
+            <h6>Empresa habilitada: {{ habilitado }}</h4>
+        </div>
+        <div class="col text-light">
+            <div class="row">
+                <div class="col">
+                    <h5> Registrar Empleados: </h5>
+                </div>
+                <div class="col">
+                   
+                    <!-- Boton de Regreso al modulo de administracion -->
+                    <a class="btn btn-light btn-sm" href="{{ url_for('registrar_empleado') }}">Registrar</a>
+
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h5> Ver Empleados Registrados: </h5>
+                </div>
+                <div class="col">
+                    <a class="btn btn-light btn-sm" href="{{ url_for('ver_empleados_registrados') }}">Ver Lista</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h5> Lector de Codigos QR: </h5>
+                </div>
+                <div class="col">
+                    <a class="btn btn-light btn-sm" href="{{ url_for('lector_qr') }}">Activar</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <h5> Ver Visitantes: </h5>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-light">Ver</button>
+                </div>
+            </div>
+            
+
+        </div>
+    </div>
     </div>
 
 
 </div>
-    <h1>Manage Company</h1>
-    
-    <h2>Company Details</h2>
-    <p>ID de la empresa: {{ id }}</p>
-    <p>Nombre de la empresa: {{ empresa }}</p>
-    <p>Feria a la que asistira: {{ feria }}</p>
-    <p>Telefono de la empresa: {{ telefono }}</p>
-    <p>Correo de la empresa: {{ correo }}</p>
-    <p>Pais de la empresa: {{ pais }}</p>
-    <p>Contraseña de la cuenta: {{ password }}</p>
-    <p>Identificador de la empresa: {{ identificador }}</p>
-    <p>Empresa habilitada: {{ habilitado }}</p>
 
-    <p></p>
-    
+
+
+ 
     <!-- Add more details as needed -->
 
     <form method="post" action="/empresa_login">

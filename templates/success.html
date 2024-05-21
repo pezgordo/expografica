@@ -1,8 +1,38 @@
 {% extends "layout.html" %}
 
+{% block head %}
+<title>Success</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endblock %}
+
 {% block body %}
 
 <div class="container">
-    <div class="h1 text-white"> Registro Exitoso!</div>
+    <!-- <div class="h1 text-white"> Registro Exitoso!</div> -->
+    <div class="h1 text-white">  Exito! </div>
+
+    <button onclick="goBack()">Volver</button>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            title: 'Éxito!',
+            html: '{{ message|tojson|safe }}',  // Use html instead of text and ensure the message is safe
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                history.back();  // This will take the user back to the previous page
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -3,7 +3,7 @@
 {% extends "layout.html" %}
 
 {% block head %}
-
+<meta charset="UTF-8">
 <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
 
 {% endblock %}
@@ -16,10 +16,19 @@
 
         <div class="row">
             <div class="col d-print-table">
+              
+              <!-- Titulo - Lista de Visitantes Registrados-->
                 <h3 class="text-light"> Lista de Visitantes Registrados</h3>
+
+                <!-- Boton para Imprimir Lista-->
                 <button class="btn btn-secondary hidden-print d-print-none" onclick="window.print();"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Imprimir </button>
+                
+                <!-- Boton para Exportar datos a Excel -->
+                <button class="btn btn-success" type="submit" onclick="location.href='{{ url_for('export') }}'"> Exportar a Excel </button>
+                
                 <section>
                     <div>
+                        <!-- Table Div -->
                         <div id="table"></div>
                       </div>
 
@@ -30,12 +39,16 @@
     </div>
     <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
     <script>
+
+      // Select the Table Div
       const tableDiv = document.getElementById('table');
 
+      // Update URLs
       const updateUrl = (prev, query) => {
         return prev + (prev.indexOf('?') >= 0 ? '&' : '?') + new URLSearchParams(query).toString();
       };
 
+      // Edit Cell Attributes
       const editableCellAttributes = (data, row, col) => {
           if (row) {
             return {contentEditable: 'true', 'data-element-id': row.cells[0].data};
@@ -45,16 +58,17 @@
           }
       };
 
+      // Initialize Grid
       new gridjs.Grid({
         columns: [
           { id: 'id', name: 'ID' },
-          { id: 'empresa', name: 'Empresa', sort: false },
+          { id: 'empresa', name: 'Empresa', sort: false, 'attributes': editableCellAttributes },
           { id: 'nombre', name: 'Nombre', 'attributes': editableCellAttributes },
-          { id: 'cargo', name: 'Cargo', sort: false },
+          { id: 'cargo', name: 'Cargo', sort: false, 'attributes': editableCellAttributes},
           { id: 'documento', name: 'Documento', sort: true },
-          { id: 'telefono', name: 'Telefono', sort: false },
-          { id: 'correo', name: 'Correo', sort: false },
-          { id: 'ciudad', name: 'Ciudad', sort: false },
+          { id: 'telefono', name: 'Telefono', sort: false, 'attributes': editableCellAttributes },
+          { id: 'correo', name: 'Correo', sort: false, 'attributes': editableCellAttributes },
+          { id: 'ciudad', name: 'Ciudad', sort: false, 'attributes': editableCellAttributes },
           { id: 'pais', name: 'Pais' },
           { id: 'feria', name: 'Feria' },
           { id: 'identificador', name: 'Identificador' },
@@ -69,14 +83,23 @@
             formatter: (_, row) =>
                     gridjs.html(`<form action="/generate_qr" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Imprimir Etiqueta</button></form>`)       
           },
+          {
+            name: 'Reenviar QR', sort: false,
+            formatter: (_, row) =>
+                    gridjs.html(`<form action="/reenviar_qr" method="post"><input name="id" type="hidden" value="${row.cells[0].data }"><button type="submit" class="btn btn-danger d-print-none">Re enviar QR</button></form>`)       
+          },
           
           
         ],
+
+        // Server-side Data Fetching
         server: {
           url: '/api/data',
           then: results => results.data,
           total: results => results.total,
         },
+
+        // Searching
         search: {
           enabled: true,
           server: {
@@ -86,6 +109,8 @@
           },
         },
         resizable: true,
+
+        // Sorting
         sort: {
           enabled: true,
           multiColumn: true,
@@ -97,6 +122,8 @@
             },
           },
         },
+
+        // Pagination
         pagination: {
           enabled: true,
           server: {
@@ -105,6 +132,8 @@
             },
           },
         },
+
+        // Language Customization
         language: {
           'search': {
             'placeholder': 'Buscar...'
@@ -125,12 +154,16 @@
 
       let savedValue;
 
+      // EVENT LISTENERS
+
+      // Focus In Event - Saves the current cell content when the cell gains focus.
       tableDiv.addEventListener('focusin', ev => {
         if (ev.target.tagName === 'TD') {
           savedValue = ev.target.textContent;
         }
       });
 
+      // Focus Out Event - Sends a POST request to update the server with new cell content if it has changed.
       tableDiv.addEventListener('focusout', ev => {
         if (ev.target.tagName === 'TD') {
           if (savedValue !== ev.target.textContent) {
@@ -147,6 +180,7 @@
         }
       });
 
+      // Keydown Event - Handles keyboard interactions. Esc cancels changes, Enter confirms them by blurring the cell.
       tableDiv.addEventListener('keydown', ev => {
         if (ev.target.tagName === 'TD') {
           if (ev.key === 'Escape') {

@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block body %}
+    <div class="container-fluid" style="font-size: 12px; text-align: center; padding: 0px; margin: 0px;">
+        <div class="row">
+            <div class="col d-print-table">
+                <h3 class="text-light"> Lista de Empleados Registrados de la empresa {{ empresa }} </h3>
+                <section>
+                    <table id="table" class="table-dark table-striped table-bordered table-hover vw-100 mt-4">
+                        
+                        <button class="btn btn-secondary hidden-print d-print-none" onclick="window.print();"><span class="glyphicon glyphicon-print" aria-hidden="true"></span> Imprimir </button>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Empresa</th>
+                                <th>Cargo</th>
+                                <th>Telefono</th>
+                                <th>Correo</th>
+                                <th>Identificador</th>
+                                <th>Fecha de Registro</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for empleado in empleados_registrados %}
+                                <tr>
+                                    <td>{{ empleado[0] }}</td>
+                                    <td>{{ empleado[1] }}</td>
+                                    <td>{{ empleado[2] }}</td>
+                                    <td>{{ empleado[3] }}</td>
+                                    <td>{{ empleado[4] }}</td>
+                                    <td>{{ empleado[5] }}</td>
+                                    <td>{{ empleado[6] }}</td>
+
+
+                                    <td>
+                                        <!--DEVELOPER SWITCH-->
+                                        <!--REMOTE-->
+                                        <!--<form action="/webapp/desregistrarse" method="post">-->
+                                        <!--LOCAL-->
+                                        <form action="/desregistrarse" method="post">
+
+
+                                            <input name="id" type="hidden" value="{{ empleado[0] }}">
+                                            <button type="submit" class="btn btn-danger d-print-none">Desregistrar</button>
+                                        </form>
+
+                                    </td>
+                                    <td>
+                                        <!--DEVELOPER SWITCH-->
+                                        <!--REMOTE-->
+                                        <!--<form action="/webapp/generate_qr" method="post" target="_blank">-->
+                                        <!--LOCAL-->
+                                        <form action="/generate_qr" method="post" target="_blank">
+
+
+                                            <input name="id" type="hidden" value="{{ empleado[0] }}">
+                                            <button type="submit" class="btn btn-secondary d-print-none">Generar Qr</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </section>
+            </div>
+        </div>
+    </div>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+{% endblock %}

@@ -2,5 +2,7 @@
     "editor.quickSuggestions": {
         "other": "off"
     },
-    "editor.suggestOnTriggerCharacters": false
+    "editor.suggestOnTriggerCharacters": false,
+    "editor.hover.enabled": false,
+    "editor.parameterHints.enabled": false
 }

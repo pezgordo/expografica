@@ -1,0 +1,59 @@
+{% if var_feria == 'TEXTIL' %}
+    {% extends "layout_textil.html" %}
+
+{% else %}
+    {% extends "layout.html" %}
+{% endif %}
+
+{% block head %}
+{% endblock %}
+
+{% block body %}
+    
+<div class="container">
+    <div class="row">
+        <div class="h1 text-white" > Registrar nuevo empleado para empresa: {{ empresa_empleado }}</div>
+        <div class="h5 text-white" > Porfavor ingrese los datos del empleado</div>
+
+        <div class="col">
+            <form method="post" action="/registrar_empleado">
+
+                <!-- Nombre del Empleado -->
+                <div class="form-group mb-2 pt-3">
+                    <label for="nombre_empleado"  class="form-label text-white" id="nombre_empleado_id">Nombre:</label>
+                    <input type="text" class="form-control mx-auto" id="nombre_empleado" name="nombre_empleado" required>
+                </div>
+        
+                <!-- Cargo del Empleado -->
+                <div class="form-group mb-2">
+                    <label for="cargo_empleado"  class="form-label text-white" id="password_lang">Cargo:</label>
+                    <input type="text" class="form-control mx-auto" id="cargo_empleado" name="cargo_empleado" required>
+                </div>
+
+                <!-- Telefono del Empleado -->
+                <div class="form-group mb-2">
+                    <label for="telefono_empleado"  class="form-label text-white" id="password_lang">Telefono:</label>
+                    <input type="text" class="form-control mx-auto" id="telefono_empleado" name="telefono_empleado" required>
+                </div>
+
+                <!-- Correo del Empleado -->
+                <div class="form-group mb-2">
+                    <label for="correo_empleado"  class="form-label text-white" id="password_lang">Correo:</label>
+                    <input type="text" class="form-control mx-auto" id="correo_empleado" name="correo_empleado" required>
+                </div>
+        
+                <!-- Ingresar -->
+                <button type="submit" class="botoncito" id="boton_registrar_empleado">Registrar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+ 
+    <!-- Add more details as needed -->
+
+
+
+{% endblock %}
